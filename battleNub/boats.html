@@ -39,11 +39,11 @@
         <div class="col">
           Class of ship
           </br>
-          <button id="l5" onclick="setLength(5)">5</button>
-          <button id="l4" onclick="setLength(4)">4</button>
-          <button id="l3" onclick="setLength(3)">3</button>
-          <button id="l3b" onclick="setLength(3, 'b')">3</button>
-          <button id="l2" onclick="setLength(2)">2</button>
+          <button id="l5" onclick="setLength(5)" style="background-color:#ffff80;">5</button>
+          <button id="l4" onclick="setLength(4)" style="background-color:gray;">4</button>
+          <button id="l3" onclick="setLength(3)" style="background-color:#ffb3b3;">3</button>
+          <button id="l3b" onclick="setLength(3, 'b')" style="background-color:#99b3ff;">3</button>
+          <button id="l2" onclick="setLength(2)" style="background-color:#e6ffb3;">2</button>
           <form>
           	<input type="radio" name="orientation" checked onclick="setOrientation('v')">Vertical</input>
           	<input type="radio" name="orientation" onclick="setOrientation('h')">Horizontal</input>
@@ -54,17 +54,14 @@
           <div id="startShips" class="disabled"></div>
         </div>
 
-        <div class="col">
-          Game ID: <strong id="gameId"></strong>
-        </div>
-
       </section>
+      
+      <a href="http://people.kth.se/~marang/battleNub/plain.html" onclick="storeData()"><button id="bButton" disabled>START BATTLE</button></a>
+	  <a href="http://people.kth.se/~marang/battleNub/join.html" onclick="storeData()"><button id="jButton" disabled>JOIN BATTLE</button></a>
 
     </section>
 
   </section>
-
-  <footer><a href="http://pubnub.com" target="_blank">PubNub.com</a></footer>
 
 
   <script src="//cdn.pubnub.com/pubnub-3.7.14.min.js"></script>
