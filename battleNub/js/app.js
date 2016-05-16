@@ -6,6 +6,11 @@
   var enemyShips = $('#enemyShips');
   var output = document.querySelector('#output');
   var whosTurn = document.getElementById('whosTurn');
+  
+  var myHit = 0;
+  var enemyHit = 0;
+  
+  ships = JSON.parse(localStorage.getItem("boats"));
 
   var gameid = '';
   var rand = (Math.random() * 9999).toFixed(0);
@@ -20,6 +25,7 @@
 	var channelX = 'battleNubX--'+ gameid;
 	var channelO = 'battleNubO--'+ gameid;
 	var channelList = [channelX, channelO];
+	var channelH = 'battleNubH--'+ gameid;
   
   //console.log(': ');
 
@@ -78,6 +84,12 @@ function subscribe(channel) {
 
     },
     callback: function(m) {
+    	console.log(m.position);
+    	
+    	if(mySign !== m.player){
+    		publishH(m);
+    	}
+    	
       // Display the move
       if(document.querySelector('#moves')) {
         var movesOutput = document.querySelector('#moves');
@@ -87,19 +99,19 @@ function subscribe(channel) {
       // Display the move on the board
       var element;
       if(mySign === "X" && channel === channelX){
-      	element = $('#myShips').find("[data-position='" +m.position + "']");
+      	element = $('#enemyShips').find("[data-position='" +m.position + "']");
       }else if(mySign === "X" && channel === channelO){
-      	element = $('#enemyShips').find("[data-position='" +m.position + "']");
-      }else if(mySign === "O" && channel === channelX){
-      	element = $('#enemyShips').find("[data-position='" +m.position + "']");
-      }else if(mySign === "O" && channel === channelO){
       	element = $('#myShips').find("[data-position='" +m.position + "']");
+      }else if(mySign === "O" && channel === channelX){
+      	element = $('#myShips').find("[data-position='" +m.position + "']");
+      }else if(mySign === "O" && channel === channelO){
+      	element = $('#enemyShips').find("[data-position='" +m.position + "']");
       }
       
       element.text(m.player);
-      console.log(element);
 
-      checkGameStatus(m.player, element);
+      turn = (turn === 'X') ? 'O' : 'X';
+      whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
 
       // this is for Pub/Sub explained section.
       subscribed(m);
@@ -113,12 +125,73 @@ function subscribe(channel) {
   	}else{
   	 c = channelX;
   	}
-  	console.log(c);
+  	
     pubnub.publish({
       channel: c,
       message: {player: player, position: position},
       callback: function(m){
-        console.log(m);
+        console.log("channelH");
+      }
+    });
+  }
+  
+  function subscribeH(){
+  	pubnub.subscribe({
+    channel: channelH,
+    callback: function(m) {
+    	if(m.hit){
+    		if(m.player == mySign){
+    			myHit += 1;
+    		}else{
+    			enemyHit += 1; 
+    		}
+    		if(myHit == 17){
+    			alert("You win!");
+    			unsubscribe();
+    		}else if(enemyHit == 17){
+    			alert("You lose!");
+    			unsubscribe();
+    		}
+    		if(m.player === mySign){
+    			$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "url('http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif')");
+    			$('#enemyShips').find("[data-position='"+m.position+"']").css("color", "#D00000");
+    		}else if(m.player !== mySign){
+    			$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "url('http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif')");
+    			$('#myShips').find("[data-position='"+m.position+"']").css("color", "#D00000");
+    		}
+    		console.log("explosion");
+    	}else{
+    		if(m.player === mySign){
+    			$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "url('https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif')");
+    		}else if(m.player !== mySign){
+    			$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "url('https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif')");
+    		}
+    	}
+    	
+    	setTimeout(function(){ 
+    		$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "");
+    		$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "");
+    	}, 1500);
+    }
+  });
+  }
+  
+  function publishH(m){
+    var hit = false;
+  	for(key in ships){
+  		var boat = ships[key];
+  		for(e in boat){
+  			if(boat[e][0] === m.position){
+  				boat[e][1] = true;
+  				hit = true;
+  			}
+  		}
+  	}
+    pubnub.publish({
+      channel: channelH,
+      message: {player: m.player, position: m.position, hit: hit},
+      callback: function(m){
+        console.log("asdfasfoe");
       }
     });
   }
@@ -164,10 +237,9 @@ function subscribe(channel) {
 
   function checkGameStatus(player, el) {
     moves += 1;
-    console.log('Moves: '+moves);
 
     score[player] += el.indicator;
-    console.log('Score for player, ' + player + ': ' + score[player]);
+    //console.log('Score for player, ' + player + ': ' + score[player]);
 
     if (win(score[turn])) {
       alert(turn + ' wins!');
@@ -208,7 +280,9 @@ function subscribe(channel) {
         cell.width = cell.height = 50;
         cell.align = cell.valign = 'center';
         cell.indicator = indicator;
-        cell.onclick = set;
+        if(channel == channelO){
+        	cell.onclick = set;
+        }
         cell.appendChild(document.createTextNode(''));
         row.appendChild(cell);
         squares.push(cell);
@@ -220,9 +294,9 @@ function subscribe(channel) {
     var ships;
     
     if(channel == channelX){
-    	ships = document.getElementById('enemyShips');
-    }else{
     	ships = document.getElementById('myShips');
+    }else{
+    	ships = document.getElementById('enemyShips');
     }
 	ships.appendChild(board);
     
@@ -271,10 +345,10 @@ function subscribe(channel) {
       output.innerHTML = '';
 
       var count = select.options[select.selectedIndex].value;
-      console.log('Getting '+count+ ' messages from history...');
+      //console.log('Getting '+count+ ' messages from history...');
 
       var isReversed = reverseCheck.checked;
-      console.log('Reverse: '+isReversed);
+      //console.log('Reverse: '+isReversed);
 
       var timespan = (timeCheck.checked) ? timeSelect.value : null;
 
@@ -289,7 +363,7 @@ function subscribe(channel) {
       var start = (new Date().getTime() - (timespan*60*1000)) * 10000;
       var end = new Date().getTime() * 10000;
 
-      console.log(start, end)
+      //console.log(start, end)
 
       pubnub.history({
         channel: channel,
@@ -298,7 +372,7 @@ function subscribe(channel) {
         end: end,
         callback: function(messages) {
           messages[0].forEach(function(m){ 
-            console.log(m);
+            //console.log(m);
             output.innerHTML =  output.innerHTML + displayOutput(m);
           });
         }
@@ -311,7 +385,7 @@ function subscribe(channel) {
         reverse: isReversed,
         callback: function(messages) {
           messages[0].forEach(function(m){ 
-            console.log(m);
+            //console.log(m);
             output.innerHTML =  output.innerHTML + displayOutput(m);
           });
         }
@@ -348,19 +422,45 @@ function subscribe(channel) {
   if(document.getElementById('quitButton')) {
     var quitButton = document.getElementById('quitButton');
     quitButton.addEventListener('click', function(e) {
-
-      pubnub.unsubscribe({
-        channel: channel,
+      unsubscribe();
+    });
+  }
+  
+  function unsubscribe() {
+  	  pubnub.unsubscribe({
+        channel: [channelO, channelX,channelH],
         callback: function(m) {
-          console.log(m);
+          //console.log(m);
           showPresenceConsole(m);
         }
       });
-    });
   }
   
   for(key in channelList){
  		subscribe(channelList[key]);
   }
+  
+  
+  var color;
+  for(key in ships){
+  	boat = ships[key];
+  	for(el in boat){
+  		position = boat[el][0];
+  		if(key == "2a"){
+  			color="green";
+  		}else if(key == "3a"){
+  			color="red";
+  		}else if(key == "3b"){
+  			color="blue";
+  		}else if(key == "4a"){
+  			color="gray";
+  		}else if(key == "5a"){
+  			color="black";
+  		}
+  		$('#myShips').find("[data-position='"+position+"']").css("background-color", color);
+  	}
+  }
+  
+  subscribeH();
 
 })();
