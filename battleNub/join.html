@@ -17,7 +17,7 @@
   	  function joinBattle(e){
   	  	e.preventDefault();
   	  	var battleID = document.getElementById("IdInput").value;
-  	  	var link = "http://people.kth.se/~marang/battleNub/plain.html?id="+battleID;
+  	  	var link = "plain.html?id="+battleID;
   		window.location.href = link;
   	  }
   </script>
@@ -25,17 +25,15 @@
 </head>
 
 <body>
-  <header>
-    <a href="index.html">PubNub JavaScript Example</a>
-  </header>
-
   <section class="masthead">
     <h1>BattleNub</h1>
   </section>
 
   <section class="main">
   	<form name="joinForm" onsubmit="joinBattle(event)">
-  		<input type="text" id="IdInput"></input>
+  		Input the ID of the game you wish to join!
+  		</br>
+  		ID: <input type="text" id="IdInput" style="min-height:48px"></input>
   		<button type="submit">JOIN</button>
 	</form>
   </section>

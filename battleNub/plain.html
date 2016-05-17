@@ -16,10 +16,6 @@
 </head>
 
 <body>
-  <header>
-    <a href="index.html">PubNub JavaScript Example</a>
-  </header>
-
   <section class="masthead">
     <h1>BattleNub</h1>
   </section>
@@ -30,33 +26,30 @@
       
 
       <p>
-		Give this link to a friend: <span id="gameIdQuery"></span>
+		Send the game ID to a friend you wish to play with.
         <!-- <strong>pubsub.html?id=<span id="gameIdQuery"></span></strong></li> -->
-
       </p>
       
-      <section class="game">
-        <div class="col">
-          &nbsp;
-        </div>
-
-        <div class="col">
-        <strong>Enemy Ships</strong>
-          <div id="enemyShips" class="disabled"></div>
-          </br>
-          
-          <strong>My Ships</strong>
-          <div id="myShips" class="disabled"></div>
-          
-        </div>
-
-        <div class="col">
+      <section class="game">        
+        <div class="col" style="width: 100vw;">
           Game ID: <strong id="gameId"></strong>
           <br>
           You: <span id="you"></span>
           <br>
           <span id="whosTurn">It is your turn!</span>
+          <br><br>
         </div>
+
+        <div class="col" style="width: 100vw;color:white;">
+        	<strong>Enemy Ships</strong>
+            <div id="enemyShips" class="disabled"></div>
+            </br>
+          
+            <strong>My Ships</strong>
+            <div id="myShips" class="disabled"></div>
+        </div>
+
+        
 
       </section>
 

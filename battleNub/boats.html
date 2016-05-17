@@ -16,10 +16,6 @@
 </head>
 
 <body>
-  <header>
-    <a href="index.html">PubNub JavaScript Example</a>
-  </header>
-
   <section class="masthead">
     <h1>BattleNub</h1>
   </section>
@@ -28,36 +24,33 @@
 
     <section class="demo">
       
-
-      <p>
-		Give this link to a friend: <span id="gameIdQuery"></span>
-        <!-- <strong>pubsub.html?id=<span id="gameIdQuery"></span></strong></li> -->
-
-      </p>
-      
       <section class="game">
         <div class="col">
-          Class of ship
+          Choose a ship
           </br>
-          <button id="l5" onclick="setLength(5)" style="background-color:#ffff80;">5</button>
-          <button id="l4" onclick="setLength(4)" style="background-color:gray;">4</button>
-          <button id="l3" onclick="setLength(3)" style="background-color:#ffb3b3;">3</button>
-          <button id="l3b" onclick="setLength(3, 'b')" style="background-color:#99b3ff;">3</button>
-          <button id="l2" onclick="setLength(2)" style="background-color:#e6ffb3;">2</button>
+          <div id="l5" onclick="setLength(5, 'a')" style="background-repeat:no-repeat;background-size: 50vw 10vw; min-width: 50vw; min-height:10vw;background-image:url('images/5a.png');"></div>
+          </br>
+          <div id="l4" onclick="setLength(4, 'a')" style="background-repeat:no-repeat;background-size: 40vw 10vw; min-width: 40vw; min-height:10vw;background-image:url('images/4a.png');"></div>
+          </br>
+          <div id="l3" onclick="setLength(3, 'a')" style="background-repeat:no-repeat;background-size: 30vw 10vw; min-width: 30vw; min-height:10vw;background-image:url('images/3a.png');"></div>
+          </br>
+          <div id="l3b" onclick="setLength(3, 'b')" style="background-repeat:no-repeat;background-size: 30vw 10vw; min-width: 30vw; min-height:10vw;background-image:url('images/3b.png');"></div>
+          </br>
+          <div id="l2" onclick="setLength(2, 'a')" style="background-repeat:no-repeat;background-size: 20vw 10vw; min-width: 20vw; min-height:10vw;background-image:url('images/2a.png');"></div>
           <form>
           	<input type="radio" name="orientation" checked onclick="setOrientation('v')">Vertical</input>
           	<input type="radio" name="orientation" onclick="setOrientation('h')">Horizontal</input>
           </form>
         </div>
 
-        <div class="col">
+        <div class="col" style="width: 100vw;margin-top:15px;">
           <div id="startShips" class="disabled"></div>
         </div>
 
       </section>
       
-      <a href="http://people.kth.se/~marang/battleNub/plain.html" onclick="storeData()"><button id="bButton" disabled>START BATTLE</button></a>
-	  <a href="http://people.kth.se/~marang/battleNub/join.html" onclick="storeData()"><button id="jButton" disabled>JOIN BATTLE</button></a>
+      <a href="plain.html" onclick="storeData()"><button id="bButton" disabled>START BATTLE</button></a>
+	  <a href="join.html" onclick="storeData()"><button id="jButton" disabled>JOIN BATTLE</button></a>
 
     </section>
 
