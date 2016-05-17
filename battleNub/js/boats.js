@@ -30,7 +30,7 @@
       for (j = 1; j < 11; j += 1) {
         cell = document.createElement('td');
         cell.dataset.position = i + '-' + j;
-        cell.width = cell.height = 50;
+        cell.width = cell.height = '10%';
         cell.align = cell.valign = 'center';
         cell.indicator = indicator;
         cell.setAttribute("onclick", "placeBoat("+i+","+j+")");
@@ -46,7 +46,7 @@
     
   }
   
-  this.setLength = function(l, type="a"){
+  this.setLength = function(l, type){
   		shipLength = l;
   		shipType = type;
   }

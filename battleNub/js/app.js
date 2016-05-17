@@ -20,7 +20,7 @@
   gameId.textContent = gameid; 
 
   var oppoenetUrl = 'http://people.kth.se/~marang/battleNub/plain.html?id=' +gameid;
-  gameIdQuery.innerHTML = '<a href="' +oppoenetUrl+ '" target="_blank">' +oppoenetUrl+ '</a>';
+  //gameIdQuery.innerHTML = '<a href="' +oppoenetUrl+ '" target="_blank">' +oppoenetUrl+ '</a>';
 
 	var channelX = 'battleNubX--'+ gameid;
 	var channelO = 'battleNubO--'+ gameid;
@@ -277,7 +277,7 @@ function subscribe(channel) {
       for (j = 1; j < 11; j += 1) {
         cell = document.createElement('td');
         cell.dataset.position = i + '-' + j;
-        cell.width = cell.height = 50;
+        cell.width = cell.height = '10%';
         cell.align = cell.valign = 'center';
         cell.indicator = indicator;
         if(channel == channelO){
@@ -447,15 +447,15 @@ function subscribe(channel) {
   	for(el in boat){
   		position = boat[el][0];
   		if(key == "2a"){
-  			color="green";
+  			color="#e6ffb3";
   		}else if(key == "3a"){
-  			color="red";
+  			color="#ffb3b3";
   		}else if(key == "3b"){
-  			color="blue";
+  			color="#99b3ff";
   		}else if(key == "4a"){
   			color="gray";
   		}else if(key == "5a"){
-  			color="black";
+  			color="#ffff80";
   		}
   		$('#myShips').find("[data-position='"+position+"']").css("background-color", color);
   	}
