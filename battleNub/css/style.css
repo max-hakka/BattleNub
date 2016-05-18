@@ -275,4 +275,19 @@ header .fa {
   top: 9px;
   font-size: 2em;
 }
-
+table{
+	width:100vw;
+	height:100vw;
+	overflow:hidden;
+	background-image: url('../images/bg-ocean.png');
+    background-size: auto 100%;
+}
+table td {
+  min-width:10%;
+  background-size:10vw 10vw;
+  font-size:7vw;
+  font-weight:800;
+}
+#startShips{
+	height: 100vw;
+}
