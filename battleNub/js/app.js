@@ -169,11 +169,11 @@ function subscribe(channel) {
     	
     	var winStatus;
     	var gameover = false;
-    	if(myHit == 1){
+    	if(myHit == 17){
     		winStatus = "You win!";
     		gameover = true;
     		unsubscribe();
-    	}else if(enemyHit == 1){
+    	}else if(enemyHit == 17){
     		winStatus = "You lose!";
     		gameover = true;
     		unsubscribe();
