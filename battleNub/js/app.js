@@ -145,13 +145,7 @@ function subscribe(channel) {
     		}else{
     			enemyHit += 1; 
     		}
-    		if(myHit == 17){
-    			alert("You win!");
-    			unsubscribe();
-    		}else if(enemyHit == 17){
-    			alert("You lose!");
-    			unsubscribe();
-    		}
+    		
     		if(m.player === mySign){
     			$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "url('http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif')");
     			$('#enemyShips').find("[data-position='"+m.position+"']").css("color", "#D00000");
@@ -172,6 +166,26 @@ function subscribe(channel) {
     		$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "");
     		$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "");
     	}, 1500);
+    	
+    	var winStatus;
+    	var gameover = false;
+    	if(myHit == 1){
+    		winStatus = "You win!";
+    		gameover = true;
+    		unsubscribe();
+    	}else if(enemyHit == 1){
+    		winStatus = "You lose!";
+    		gameover = true;
+    		unsubscribe();
+    	}
+    	
+    	if(gameover){
+    		var popUpElement = '<div style="width:60vw;height:60vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;"><button  style="float:right; width:25px; height:25px;padding:0;border-radius:0;" onclick="hidePopup()">X</button><h3 style="color:green; font-size:30px; padding-top:12%;">'+winStatus+'</h3><a href="boats.html"><button style="width:60%; height:20%; font-size:70%;">PLAY AGAIN</button></a><a href="index.html"><button style="width:60%; height:20%; font-size:70%;">MAIN MENU</button></a></div>';
+    		$('#popup').css("display", "block");
+    		$('#popup').append(popUpElement);
+    	}
+    	
+    	
     }
   });
   }
@@ -416,7 +430,7 @@ function subscribe(channel) {
     var child = document.createElement('div');
     var text = document.createTextNode(JSON.stringify(m));
     child.appendChild(text);
-    console.appendChild(child);
+    //console.appendChild(child);
   }
 
   if(document.getElementById('quitButton')) {
@@ -459,6 +473,10 @@ function subscribe(channel) {
   		}
   		$('#myShips').find("[data-position='"+position+"']").css("background-color", color);
   	}
+  }
+  
+  this.hidePopup = function(){
+  	$('#popup').css("display", "none");
   }
   
   subscribeH();

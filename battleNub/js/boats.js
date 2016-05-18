@@ -93,7 +93,7 @@
   			if(b){
   				for(el in b){
   					p = b[el][0];
-  					$("table").find("[data-position='"+p+"']").css("background-color", "white");
+  					$("table").find("[data-position='"+p+"']").css("background-color", "");
   				}
   			}
   			
