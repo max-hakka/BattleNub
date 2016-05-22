@@ -49,6 +49,13 @@
   this.setLength = function(l, type){
   		shipLength = l;
   		shipType = type;
+      var old = $("#"+l+type).siblings(".selected");
+      if(old !== undefined){
+        old.css("background-image", "url('images/"+old.attr("id")+".png')");
+        old.removeClass("selected");
+      }
+      $("#"+l+type).addClass("selected");
+      $("#"+l+type).css("background-image", "url('images/"+l+type+"-selected.png')");
   }
   
   this.setOrientation = function(ori){
