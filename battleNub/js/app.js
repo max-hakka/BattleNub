@@ -67,6 +67,12 @@ function subscribe(channel) {
           myShips.className = 'disabled';
           enemyShips.className = 'disabled';
         }
+      }else if(m.action === 'leave'){
+        var playerStatus = "Your opponent left the game!"
+        var popUpElement = '<div style="width:60vw;height:60vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;"><h3 style="color:orange; font-size:30px; padding-top:12%;">'+playerStatus+'</h3><a href="boats.html"><button style="width:60%; height:20%; font-size:70%;">NEW GAME</button></a><a href="index.html"><button style="width:60%; height:20%; font-size:70%;">MAIN MENU</button></a></div>';
+        $('#popup').empty();
+        $('#popup').css("display", "block");
+        $('#popup').append(popUpElement);
       }
 
       if(m.occupancy === 2) {
@@ -189,7 +195,7 @@ function subscribe(channel) {
     	var winStatus;
     	var gameover = false;
     	if(myHit == 17){
-    		winStatus = "You win!";
+    		winStatus = "Congratulations! You win!";
     		gameover = true;
     		unsubscribe();
     	}else if(enemyHit == 17){
@@ -200,7 +206,8 @@ function subscribe(channel) {
     	
     	if(gameover){
     		var popUpElement = '<div style="width:60vw;height:60vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;"><button  style="float:right; width:25px; height:25px;padding:0;border-radius:0;" onclick="hidePopup()">X</button><h3 style="color:green; font-size:30px; padding-top:12%;">'+winStatus+'</h3><a href="boats.html"><button style="width:60%; height:20%; font-size:70%;">PLAY AGAIN</button></a><a href="index.html"><button style="width:60%; height:20%; font-size:70%;">MAIN MENU</button></a></div>';
-    		$('#popup').css("display", "block");
+    		$('#popup').empty();
+        $('#popup').css("display", "block");
     		$('#popup').append(popUpElement);
     	}
     	
@@ -508,5 +515,16 @@ function subscribe(channel) {
   }
   
   subscribeH();
+
+  this.quitGame = function(e){
+    unsubscribe();
+    // pubnub.channel_group_remove_group({
+    //   callback: function(){console.log("removed channels");},
+    //   error: function(){"removed error"},
+    //   channel_group: channelO
+    // });
+    e.preventDefault();
+    window.location.href = "index.html";
+  }
 
 })();
