@@ -281,10 +281,23 @@ table{
     background-size: auto 100%;
 }
 table td {
-  min-width:10%;
+  min-width:10vw;
+  max-width:10vw;
+  min-height:10vw;
+  max-height:10vw;
   background-size:10vw 10vw;
   font-size:7vw;
   font-weight:800;
+  position: relative;
+  z-index: 3;
+}
+table td img{
+  width: 10vw;
+  height: 9vw;
+  z-index: 2;
+  position: absolute;
+  margin-left: -5vw;
+  margin-top: -5vw;
 }
 #startShips{
 	height: 100vw;
