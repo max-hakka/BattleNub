@@ -108,7 +108,7 @@ function subscribe(channel) {
       	element = $('#enemyShips').find("[data-position='" +m.position + "']");
       }
       
-      element.text(m.player);
+      element.empty();
 
       turn = (turn === 'X') ? 'O' : 'X';
       whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
@@ -140,6 +140,8 @@ function subscribe(channel) {
     channel: channelH,
     callback: function(m) {
     	if(m.hit){
+        var audio = new Audio('Bomb_Exploding.mp3');
+        audio.play();
     		if(m.player == mySign){
     			myHit += 1;
     		}else{
@@ -155,17 +157,34 @@ function subscribe(channel) {
     		}
     		console.log("explosion");
     	}else{
+        var audio = new Audio('Water_Splash.mp3');
+        audio.play();
     		if(m.player === mySign){
     			$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "url('https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif')");
     		}else if(m.player !== mySign){
     			$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "url('https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif')");
     		}
     	}
+
     	
+
     	setTimeout(function(){ 
+        if(m.hit){
+          if(m.player === mySign){
+            $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="http://cliparts.co/cliparts/gie/qBd/gieqBd8id.png" style="width: 10vw;height: 9vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -4.5vw;">');
+          }else if(m.player !== mySign){
+            $('#myShips').find("[data-position='"+m.position+"']").append('<img src="http://cliparts.co/cliparts/gie/qBd/gieqBd8id.png" style="width: 10vw;height: 9vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -4.5vw;">');
+          }
+        }else{
+          if(m.player === mySign){
+            $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="http://idahoptv.org/sciencetrek/topics/water/images/splash.png" style="width: 10vw;height: 9vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -4.5vw;">');
+          }else if(m.player !== mySign){
+            $('#myShips').find("[data-position='"+m.position+"']").append('<img src="http://idahoptv.org/sciencetrek/topics/water/images/splash.png" style="width: 10vw;height: 9vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -4.5vw;">');
+          }
+        }
     		$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "");
     		$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "");
-    	}, 1500);
+    	}, 2000);
     	
     	var winStatus;
     	var gameover = false;
@@ -471,8 +490,17 @@ function subscribe(channel) {
   		}else if(key == "5a"){
   			color="#ffff80";
   		}
-  		$('#myShips').find("[data-position='"+position+"']").css("background-color", color);
+  		//$('#myShips').find("[data-position='"+position+"']").css("background-color", color);
   	}
+    var p1=boat['e0'][0], p2=boat['e1'][0];
+    var p1_l=p1.split("-");
+    var p2_l=p2.split("-");
+    $('#myShips').find("[data-position='"+p1+"']").empty();
+    if(p1_l[0]===p2_l[0]){
+      $('#myShips').find("[data-position='"+p1+"']").append("<img src='images/"+key+".png' style='width:"+key.substr(0,1)+"0vw; z-index: 1;'></img>");
+    }else if(p1_l[1]===p2_l[1]){
+      $('#myShips').find("[data-position='"+p1+"']").append("<img src='images/"+key+"-v.png' style='height:"+key.substr(0,1)+"0vw; z-index: 1;'></img>");
+    }
   }
   
   this.hidePopup = function(){

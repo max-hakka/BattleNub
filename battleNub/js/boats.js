@@ -91,6 +91,7 @@
   		
   			b = boats[shipLength+shipType];
   			if(b){
+          $("table").find("[data-position='"+b['e0'][0]+"']").empty();
   				for(el in b){
   					p = b[el][0];
   					$("table").find("[data-position='"+p+"']").css("background-color", "");
@@ -110,8 +111,14 @@
   				}else if(shipLength+shipType == "5a"){
   					color="#ffff80";
   				}
-  				$("table").find("[data-position='"+positions[pos]+"']").css("background-color", color);
+  				//$("table").find("[data-position='"+positions[pos]+"']").css("background-color", color);
   			}
+        if(shipOrientation == 'v'){
+          $("table").find("[data-position='"+positions[0]+"']").append("<img src='images/"+shipLength+shipType+".png' style='width:"+shipLength+"0vw; z-index: 1;'></img>");
+        }else {
+          $("table").find("[data-position='"+positions[0]+"']").append("<img src='images/"+shipLength+shipType+"-v.png' style='height:"+shipLength+"0vw; z-index: 1;'></img>");
+        }
+
   			
   			boats[shipLength+shipType] = list;
   			
@@ -138,3 +145,6 @@
   play();
 
 })();
+
+
+//<td data-position="1-4" height="10%" width="10%" align="center" onclick="placeBoat(1,4)" style="/* background-color: rgb(230, 255, 179); *//* padding: 0 0 0 0; *//* margin-top: -50px; */"><img src="images/2a.png" style="width:20vw;height:9vw;z-index: 1;position: absolute;margin-left: -5vw;margin-top: -4.5vw;"><img src="http://cliparts.co/cliparts/gie/qBd/gieqBd8id.png" style="width: 10vw;height: 9vw;position: absolute;z-index: 2;margin-left: -5vw;margin-top: -4.5vw;"></td>
