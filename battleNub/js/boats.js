@@ -4,7 +4,7 @@
   var startShips =  document.querySelector('#startShips');
   
   var shipLength = 5;
-  var shipOrientation = "v";
+  var shipOrientation = "h";
   var shipType = 'a';
   
   var boats = {};
@@ -30,7 +30,7 @@
       for (j = 1; j < 11; j += 1) {
         cell = document.createElement('td');
         cell.dataset.position = i + '-' + j;
-        cell.width = cell.height = '10%';
+        //cell.width = cell.height = '9%';
         cell.align = cell.valign = 'center';
         cell.indicator = indicator;
         cell.setAttribute("onclick", "placeBoat("+i+","+j+")");
@@ -51,7 +51,7 @@
   		shipType = type;
       var old = $("#"+l+type).siblings(".selected");
       if(old !== undefined){
-        old.css("background-image", "url('images/"+old.attr("id")+".png')");
+        old.css("background-image", "url('images/"+old.attr("id")+"-v.png')");
         old.removeClass("selected");
       }
       $("#"+l+type).addClass("selected");

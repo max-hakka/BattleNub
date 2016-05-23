@@ -6,11 +6,16 @@
   var enemyShips = $('#enemyShips');
   var output = document.querySelector('#output');
   var whosTurn = document.getElementById('whosTurn');
+  var numberOfSunkenEl = document.getElementById('numberOfSunken');
 
   var audioLoaded = false;
   
+  var boatsNames = {'5a':"Carrier (length 5)", '4a':"Battleship (length 4)", '3a':"Cruiser (length 3)", '3b':"Submarine (length 3)", '2a':"Destroyer (length 2)"};
+  
   var myHit = 0;
   var enemyHit = 0;
+  var numberOfSunken = 0;
+  numberOfSunkenEl.textContent = numberOfSunken;
   
   ships = JSON.parse(localStorage.getItem("boats"));
 
@@ -95,8 +100,6 @@ function subscribe(channel) {
         enemyShips.className = '';
         startNewGame();
       }
-
-      document.getElementById('you').textContent = mySign;
 
       // For Presence Explained Section only
       if(document.querySelector('.presence')) {
@@ -211,13 +214,33 @@ function subscribe(channel) {
     		$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "");
     	}, 2000);
     	
+    	console.log(m.sunk);
+    	if(m.sunk){
+    		
+    		if(m.player === mySign){
+    			numberOfSunken = numberOfSunken +1;
+    			numberOfSunkenEl.textContent = numberOfSunken;
+    		}
+    		
+    		var popUpElement = '<div style="width:60vw;height:20vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;padding:15px;">'+boatsNames[m.boatHit]+" was sunk!"+'</div>';
+    		$('#popup').empty();
+        	$('#popup').css("display", "block");
+    		$('#popup').append(popUpElement);
+    	}
+    	
+    	setTimeout(function(){ 
+    		if(!gameover){
+        		$('#popup').css("display", "none");
+        	}
+    	}, 2000);
+    	
     	var winStatus;
     	var gameover = false;
-    	if(myHit == 17){
+    	if(myHit == 2){
     		winStatus = "Congratulations! You win!";
     		gameover = true;
     		unsubscribe();
-    	}else if(enemyHit == 17){
+    	}else if(enemyHit == 2){
     		winStatus = "You lose!";
     		gameover = true;
     		unsubscribe();
@@ -226,10 +249,9 @@ function subscribe(channel) {
     	if(gameover){
     		var popUpElement = '<div style="width:60vw;height:60vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;"><button  style="float:right; width:25px; height:25px;padding:0;border-radius:0;" onclick="hidePopup()">X</button><h3 style="color:green; font-size:30px; padding-top:12%;">'+winStatus+'</h3><a href="boats.html"><button style="width:60%; height:20%; font-size:70%;">PLAY AGAIN</button></a><a href="index.html"><button style="width:60%; height:20%; font-size:70%;">MAIN MENU</button></a></div>';
     		$('#popup').empty();
-        $('#popup').css("display", "block");
+        	$('#popup').css("display", "block");
     		$('#popup').append(popUpElement);
     	}
-    	
     	
     }
   });
@@ -237,18 +259,30 @@ function subscribe(channel) {
   
   function publishH(m){
     var hit = false;
+    var sunk =false;
+    var boatHit = "";
+    Loop1:
   	for(key in ships){
   		var boat = ships[key];
   		for(e in boat){
   			if(boat[e][0] === m.position){
+  				boatHit = key;
   				boat[e][1] = true;
   				hit = true;
+  				for(k in ships[key]){
+  					sunk =true;
+  					if(!boat[k][1]){
+  						sunk =false;
+  						break Loop1;
+  					}
+  				}
+  				
   			}
   		}
   	}
     pubnub.publish({
       channel: channelH,
-      message: {player: m.player, position: m.position, hit: hit},
+      message: {player: m.player, position: m.position, hit: hit, sunk:sunk, boatHit:boatHit},
       callback: function(m){
         console.log("asdfasfoe");
       }
