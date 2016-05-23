@@ -236,11 +236,11 @@ function subscribe(channel) {
     	
     	var winStatus;
     	var gameover = false;
-    	if(myHit == 2){
+    	if(myHit == 17){
     		winStatus = "Congratulations! You win!";
     		gameover = true;
     		unsubscribe();
-    	}else if(enemyHit == 2){
+    	}else if(enemyHit == 17){
     		winStatus = "You lose!";
     		gameover = true;
     		unsubscribe();
