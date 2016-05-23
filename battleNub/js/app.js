@@ -6,6 +6,8 @@
   var enemyShips = $('#enemyShips');
   var output = document.querySelector('#output');
   var whosTurn = document.getElementById('whosTurn');
+
+  var audioLoaded = false;
   
   var myHit = 0;
   var enemyHit = 0;
@@ -36,6 +38,19 @@
       publish_key: 'pub-c-bd6700ec-5f52-42c2-9241-79d375376cc8',
       uuid: uuid
   });
+
+  var audioE = document.getElementById("audioE");
+  var audioS = document.getElementById("audioS");
+
+  this.playAudio = function (t){
+      audioE.muted = false;
+      audioS.muted = false;
+      if(t == "E"){
+        audioE.play();
+      }else if(t == "S"){
+        audioS.play();
+      }
+  };
 
   function displayOutput(m) {
     if(!m) return;
@@ -113,8 +128,10 @@ function subscribe(channel) {
       }else if(mySign === "O" && channel === channelO){
       	element = $('#enemyShips').find("[data-position='" +m.position + "']");
       }
-      
-      element.empty();
+      var imgTagExist = element.find("img").length;
+      if(!imgTagExist){
+        element.empty();
+      }
 
       turn = (turn === 'X') ? 'O' : 'X';
       whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
@@ -145,9 +162,12 @@ function subscribe(channel) {
   	pubnub.subscribe({
     channel: channelH,
     callback: function(m) {
+      console.log(m);
     	if(m.hit){
-        var audio = new Audio('Bomb_Exploding.mp3');
-        audio.play();
+        //var audio = new Audio('Bomb_Exploding.mp3');
+        //audio.play();
+        $('#audioE_button').click();     
+
     		if(m.player == mySign){
     			myHit += 1;
     		}else{
@@ -155,20 +175,19 @@ function subscribe(channel) {
     		}
     		
     		if(m.player === mySign){
-    			$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "url('http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif')");
+          $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
     			$('#enemyShips').find("[data-position='"+m.position+"']").css("color", "#D00000");
     		}else if(m.player !== mySign){
-    			$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "url('http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif')");
+          $('#myShips').find("[data-position='"+m.position+"']").append('<img src="http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
     			$('#myShips').find("[data-position='"+m.position+"']").css("color", "#D00000");
     		}
     		console.log("explosion");
     	}else{
-        var audio = new Audio('Water_Splash.mp3');
-        audio.play();
+        $('#audioS_b').click();
     		if(m.player === mySign){
-    			$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "url('https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif')");
+          $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
     		}else if(m.player !== mySign){
-    			$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "url('https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif')");
+          $('#myShips').find("[data-position='"+m.position+"']").append('<img src="https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
     		}
     	}
 
@@ -177,15 +196,15 @@ function subscribe(channel) {
     	setTimeout(function(){ 
         if(m.hit){
           if(m.player === mySign){
-            $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="http://cliparts.co/cliparts/gie/qBd/gieqBd8id.png" style="width: 10vw;height: 9vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -4.5vw;">');
+            $('#enemyShips').find("[data-position='"+m.position+"']").find("img:last-child").attr('src', 'http://cliparts.co/cliparts/gie/qBd/gieqBd8id.png');
           }else if(m.player !== mySign){
-            $('#myShips').find("[data-position='"+m.position+"']").append('<img src="http://cliparts.co/cliparts/gie/qBd/gieqBd8id.png" style="width: 10vw;height: 9vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -4.5vw;">');
+            $('#myShips').find("[data-position='"+m.position+"']").find("img:last-child").attr('src', 'http://cliparts.co/cliparts/gie/qBd/gieqBd8id.png');
           }
         }else{
           if(m.player === mySign){
-            $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="http://idahoptv.org/sciencetrek/topics/water/images/splash.png" style="width: 10vw;height: 9vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -4.5vw;">');
+            $('#enemyShips').find("[data-position='"+m.position+"']").find("img:last-child").attr('src', 'http://idahoptv.org/sciencetrek/topics/water/images/splash.png');
           }else if(m.player !== mySign){
-            $('#myShips').find("[data-position='"+m.position+"']").append('<img src="http://idahoptv.org/sciencetrek/topics/water/images/splash.png" style="width: 10vw;height: 9vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -4.5vw;">');
+            $('#myShips').find("[data-position='"+m.position+"']").find("img:last-child").attr('src', 'http://idahoptv.org/sciencetrek/topics/water/images/splash.png');
           }
         }
     		$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "");
@@ -292,7 +311,18 @@ function subscribe(channel) {
   }
 
   function set() { 
+    if(!audioLoaded){
+      audioE.muted = true;
+      audioS.muted = true;
 
+      audioE.play();
+      audioE.pause();
+
+      audioS.play();
+      audioS.pause();
+      audioLoaded = true;
+    }
+    
     if (turn !== mySign) return;
 
     if (this.firstChild.nodeValue !== EMPTY) return;

@@ -13,6 +13,7 @@
       href="https://t6.rbxcdn.com/a3c0f861d33b516dd52d0b08fc0baff2">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -20,6 +21,7 @@
   <section class="masthead">
     <h1>BattleNub</h1>
   </section>
+  
 
   <section class="main">
     <section class="demo">
@@ -48,7 +50,8 @@
         </div>
 		
         <button style="margin-top:20px;" onclick="quitGame(event)">QUIT GAME</button>
-
+        <button id="audioE_button" onclick="playAudio('E')" type="button" style="z-index: -100; position: fixed;">Play AudioE</button>
+        <button id="audioS_b" onclick="playAudio('S')" type="button" style="z-index: -100; position: fixed;">Play AudioS</button>
       </section>
 
     </section>
@@ -58,10 +61,12 @@
   
   <div id="popup" style="width:100vw;height:100%;background-color:rgba(0,0,0,.5);position:fixed;z-index:4;">
   </div>
+  </br>
 
+  <audio src="explosion.mp3" id="audioE"></audio>
+  <audio src="Water_Splash.mp3" id="audioS"></audio>
 
   <script src="https://cdn.pubnub.com/pubnub-3.7.14.min.js"></script>
   <script src="js/app.js"></script>
-  
 </body>
 </html>
