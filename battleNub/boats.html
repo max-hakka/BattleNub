@@ -16,6 +16,7 @@
 </head>
 
 <body>
+  <div class="backButton"><button onclick="window.history.back();">BACK</button></div>
   <section class="masthead">
     <h1>BattleNub</h1>
   </section>
@@ -25,23 +26,21 @@
     <section class="demo">
       
       <section class="game">
-        <div class="col">
-          Choose a ship
+      	Choose a ship
           </br>
-          <div id="5a" onclick="setLength(5, 'a')" style="background-repeat:no-repeat;background-size: 50vw 10vw; min-width: 50vw; min-height:10vw;background-image:url('images/5a.png');"></div>
-          </br>
-          <div id="4a" onclick="setLength(4, 'a')" style="background-repeat:no-repeat;background-size: 40vw 10vw; min-width: 40vw; min-height:10vw;background-image:url('images/4a.png');"></div>
-          </br>
-          <div id="3a" onclick="setLength(3, 'a')" style="background-repeat:no-repeat;background-size: 30vw 10vw; min-width: 30vw; min-height:10vw;background-image:url('images/3a.png');"></div>
-          </br>
-          <div id="3b" onclick="setLength(3, 'b')" style="background-repeat:no-repeat;background-size: 30vw 10vw; min-width: 30vw; min-height:10vw;background-image:url('images/3b.png');"></div>
-          </br>
-          <div id="2a" onclick="setLength(2, 'a')" style="background-repeat:no-repeat;background-size: 20vw 10vw; min-width: 20vw; min-height:10vw;background-image:url('images/2a.png');"></div>
-          <form>
-          	<input type="radio" name="orientation" checked onclick="setOrientation('v')">Vertical</input>
-          	<input type="radio" name="orientation" onclick="setOrientation('h')">Horizontal</input>
-          </form>
+        <div class="col" style="overflow: hidden;width: 100vw;">
+          <div id="5a" onclick="setLength(5, 'a')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 50vw; min-height: 50vw; min-width:10vw;background-image:url('images/5a-v.png');"></div>
+          <div id="4a" onclick="setLength(4, 'a')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 40vw; min-height: 40vw; min-width:10vw;background-image:url('images/4a-v.png');"></div>
+          <div id="3a" onclick="setLength(3, 'a')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 30vw; min-height: 30vw; min-width:10vw;background-image:url('images/3a-v.png');"></div>
+          <div id="3b" onclick="setLength(3, 'b')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 30vw; min-height: 30vw; min-width:10vw;background-image:url('images/3b-v.png');"></div>
+          <div id="2a" onclick="setLength(2, 'a')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 20vw; min-height: 20vw; min-width:10vw;background-image:url('images/2a-v.png');"></div>
+          
         </div>
+        </br>
+        <form>
+          	<input type="radio" name="orientation" checked onclick="setOrientation('h')">Vertical</input>
+          	<input type="radio" name="orientation" onclick="setOrientation('v')">Horizontal</input>
+          </form>
 
         <div class="col" style="width: 100vw;margin-top:15px;">
           <div id="startShips" class="disabled"></div>
