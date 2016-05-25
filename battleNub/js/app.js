@@ -1,52 +1,53 @@
 (function() {
-
+  // Define DOM elements of game boards, gameId and whosTurn
   var gameId =  document.querySelector('#gameId');
-  var gameIdQuery = document.querySelector('#gameIdQuery');
   var myShips = $('#myShips');
   var enemyShips = $('#enemyShips');
-  var output = document.querySelector('#output');
   var whosTurn = document.getElementById('whosTurn');
-  var numberOfSunkenEl = document.getElementById('numberOfSunken');
 
+  // Define DOM elements of audios and set audios as unloaded
+  var audioE = document.getElementById("audioE");
+  var audioS = document.getElementById("audioS");
   var audioLoaded = false;
   
+  // Store names of all ships in a variable
   var boatsNames = {'5a':"Carrier (length 5)", '4a':"Battleship (length 4)", '3a':"Cruiser (length 3)", '3b':"Submarine (length 3)", '2a':"Destroyer (length 2)"};
   
+  // Initiate mySign, myHit, enemyHit and turn
+  var mySign = 'X'; 
   var myHit = 0;
   var enemyHit = 0;
+  var turn = 'X';
+
+  // Initiate/display the number of sunken boats
+  var numberOfSunkenEl = document.getElementById('numberOfSunken');
   var numberOfSunken = 0;
   numberOfSunkenEl.textContent = numberOfSunken;
   
-  ships = JSON.parse(localStorage.getItem("boats"));
+  // Get the placement of boats from local storage
+  var ships = JSON.parse(localStorage.getItem("boats"));
 
+  // Get the game id from url or generate a new one
   var gameid = '';
   var rand = (Math.random() * 9999).toFixed(0);
-
   gameid = (getGameId()) ? getGameId() : rand;
+  gameId.textContent = gameid;
 
-  gameId.textContent = gameid; 
+  // Specify the pubnub channels
+	var channelX = 'battleNubX--'+ gameid; // channel for player with sign "X"
+	var channelO = 'battleNubO--'+ gameid; // channel for player with sign "O"
+	var channelList = [channelX, channelO]; 
+	var channelH = 'battleNubH--'+ gameid; // channel for the information of the players hit and sunken boats
 
-  var oppoenetUrl = 'http://people.kth.se/~marang/battleNub/plain.html?id=' +gameid;
-  //gameIdQuery.innerHTML = '<a href="' +oppoenetUrl+ '" target="_blank">' +oppoenetUrl+ '</a>';
-
-	var channelX = 'battleNubX--'+ gameid;
-	var channelO = 'battleNubO--'+ gameid;
-	var channelList = [channelX, channelO];
-	var channelH = 'battleNubH--'+ gameid;
-  
-  //console.log(': ');
-
+  // Creates a new PubNub instance method
   var uuid = PUBNUB.uuid();
-  
   var pubnub = PUBNUB.init({
       subscribe_key: 'sub-c-bada02fc-15dc-11e6-858f-02ee2ddab7fe',
       publish_key: 'pub-c-bd6700ec-5f52-42c2-9241-79d375376cc8',
       uuid: uuid
   });
 
-  var audioE = document.getElementById("audioE");
-  var audioS = document.getElementById("audioS");
-
+  // Play a choosen audio. The value "E" of parameter (t) define explosion audio and "S" water splash.
   this.playAudio = function (t){
       audioE.muted = false;
       audioS.muted = false;
@@ -57,32 +58,22 @@
       }
   };
 
-  function displayOutput(m) {
-    if(!m) return;
-    return '<li><strong>' +  m.player + '</strong>: ' + m.position + '</li>';
-  }
-
-  /*
-   * Tic-tac-toe
-   * Based on http://jsfiddle.net/5wKfF/378/
-   * Multiplayer feature with PubNub
-   */
-
-
-  var mySign = 'X'; 
-function subscribe(channel) {
-  pubnub.subscribe({
+  // Subscribe to a channel,
+  // Check/display the occupancy of the channel,
+  // Display the interaction of the players
+  function subscribe(channel) {
+    pubnub.subscribe({
     channel: channel,
     connect: play(channel),
     presence: function(m) {
-      console.log(m);
-
+      // Check if the channel is occupied by two players and display the status.
+      // Check if a player left the game.
       if(m.uuid === uuid && m.action === 'join') {
         if(m.occupancy < 2) {
           whosTurn.textContent = 'Waiting for your opponent...'; 
         } else if(m.occupancy === 2) {
           mySign = 'O'; 
-        } else if (m.occupancy > 2) {
+        } else if(m.occupancy > 2) {
           alert('This game already have two players!');
           myShips.className = 'disabled';
           enemyShips.className = 'disabled';
@@ -95,32 +86,21 @@ function subscribe(channel) {
         $('#popup').append(popUpElement);
       }
 
+      // Enable the game boards when the game has two players
       if(m.occupancy === 2) {
         myShips.className = '';
         enemyShips.className = '';
-        startNewGame();
-      }
-
-      // For Presence Explained Section only
-      if(document.querySelector('.presence')) {
-        showPresenceExamples(m);
+        displayTurn();
       }
 
     },
     callback: function(m) {
-    	console.log(m.position);
-    	
+      // Call the function publishH() when the channel receives data from opponent 
     	if(mySign !== m.player){
     		publishH(m);
     	}
-    	
-      // Display the move
-      if(document.querySelector('#moves')) {
-        var movesOutput = document.querySelector('#moves');
-        movesOutput.innerHTML =  movesOutput.innerHTML + displayOutput(m);
-      }
 
-      // Display the move on the board
+      // Select the DOM element of clicked square
       var element;
       if(mySign === "X" && channel === channelX){
       	element = $('#enemyShips').find("[data-position='" +m.position + "']");
@@ -131,19 +111,20 @@ function subscribe(channel) {
       }else if(mySign === "O" && channel === channelO){
       	element = $('#enemyShips').find("[data-position='" +m.position + "']");
       }
+
+      // Check if there are images in the clicked square and empty the content if so
       var imgTagExist = element.find("img").length;
       if(!imgTagExist){
         element.empty();
       }
 
+      // Display whose turn it is
       turn = (turn === 'X') ? 'O' : 'X';
-      whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
-
-      // this is for Pub/Sub explained section.
-      subscribed(m);
+      displayTurn();
     },
   })};
 
+  // Publish the position of clicked square to the players own channel
   function publishPosition(player, position) {
   	var c;
   	if (player === "O"){
@@ -156,37 +137,38 @@ function subscribe(channel) {
       channel: c,
       message: {player: player, position: position},
       callback: function(m){
-        console.log("channelH");
+        //console.log("channelH");
       }
     });
   }
   
+  // Subscribe to channelH.
+  // Check/inform if there was a hit on a boat, if there was a sunken boat and if the game is over.
   function subscribeH(){
   	pubnub.subscribe({
     channel: channelH,
     callback: function(m) {
-      console.log(m);
+      // Display explosion or water splash according to if there was a hit or not
     	if(m.hit){
-        //var audio = new Audio('Bomb_Exploding.mp3');
-        //audio.play();
-        $('#audioE_button').click();     
+        $('#audioE_button').click(); // play upp the explosion audio
 
+        // Increase the number of hits of the players
     		if(m.player == mySign){
     			myHit += 1;
     		}else{
     			enemyHit += 1; 
     		}
     		
+        // Display explosion animated image
     		if(m.player === mySign){
           $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
-    			$('#enemyShips').find("[data-position='"+m.position+"']").css("color", "#D00000");
     		}else if(m.player !== mySign){
           $('#myShips').find("[data-position='"+m.position+"']").append('<img src="http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
-    			$('#myShips').find("[data-position='"+m.position+"']").css("color", "#D00000");
     		}
-    		console.log("explosion");
     	}else{
-        $('#audioS_b').click();
+        $('#audioS_b').click(); // play upp the water splash audio
+
+        // Display water splash animated image
     		if(m.player === mySign){
           $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
     		}else if(m.player !== mySign){
@@ -194,8 +176,7 @@ function subscribe(channel) {
     		}
     	}
 
-    	
-
+      // Change the animated images with explostion/water splash PNG images after 2 seconds.
     	setTimeout(function(){ 
         if(m.hit){
           if(m.player === mySign){
@@ -210,13 +191,11 @@ function subscribe(channel) {
             $('#myShips').find("[data-position='"+m.position+"']").find("img:last-child").attr('src', 'http://idahoptv.org/sciencetrek/topics/water/images/splash.png');
           }
         }
-    		$('#enemyShips').find("[data-position='"+m.position+"']").css("background-image", "");
-    		$('#myShips').find("[data-position='"+m.position+"']").css("background-image", "");
     	}, 2000);
     	
-    	console.log(m.sunk);
+      // Check if there was a sunken boat and inform the players in a popup window if so.
     	if(m.sunk){
-    		
+        // Increase the number of sunken boats
     		if(m.player === mySign){
     			numberOfSunken = numberOfSunken +1;
     			numberOfSunkenEl.textContent = numberOfSunken;
@@ -228,12 +207,14 @@ function subscribe(channel) {
     		$('#popup').append(popUpElement);
     	}
     	
+      // Close the popup window after 2 seconds.
     	setTimeout(function(){ 
     		if(!gameover){
-        		$('#popup').css("display", "none");
+        		this.hidePopup();
         	}
     	}, 2000);
     	
+      // Select the gameover message for respektive players if a player has hit 17 squares
     	var winStatus;
     	var gameover = false;
     	if(myHit == 17){
@@ -246,6 +227,7 @@ function subscribe(channel) {
     		unsubscribe();
     	}
     	
+      // Popup the gameover message if the game is over
     	if(gameover){
     		var popUpElement = '<div style="width:60vw;height:60vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;"><button  style="float:right; width:25px; height:25px;padding:0;border-radius:0;" onclick="hidePopup()">X</button><h3 style="color:green; font-size:30px; padding-top:12%;">'+winStatus+'</h3><a href="boats.html"><button style="width:60%; height:20%; font-size:70%;">PLAY AGAIN</button></a><a href="index.html"><button style="width:60%; height:20%; font-size:70%;">MAIN MENU</button></a></div>';
     		$('#popup').empty();
@@ -257,10 +239,13 @@ function subscribe(channel) {
   });
   }
   
+  // Publish the information of hit and sunken boat into the common channel (channelH)
   function publishH(m){
     var hit = false;
     var sunk =false;
     var boatHit = "";
+
+    // Check if there was a hit och sunken boat
     Loop1:
   	for(key in ships){
   		var boat = ships[key];
@@ -280,15 +265,18 @@ function subscribe(channel) {
   			}
   		}
   	}
+
+    // Publish the hit and sunken boat into the channelH
     pubnub.publish({
       channel: channelH,
       message: {player: m.player, position: m.position, hit: hit, sunk:sunk, boatHit:boatHit},
       callback: function(m){
-        console.log("asdfasfoe");
+        //console.log(m);
       }
     });
   }
 
+  // Get the game id from the URL
   function getGameId(){
     // If the uRL comes with referral tracking queries from the URL
     if(window.location.search.substring(1).split('?')[0].split('=')[0] !== 'id') {
@@ -298,53 +286,13 @@ function subscribe(channel) {
     }
   }
 
-  var squares = [], 
-    EMPTY = '\xA0',
-    score,
-    moves,
-    turn = 'X',
-    wins = [7, 56, 448, 73, 146, 292, 273, 84];
-
-  function startNewGame() {
-    var i;
-    
-    turn = 'X';
-    score = {'X': 0, 'O': 0};
-    moves = 0;
-    for (i = 0; i < squares.length; i += 1) {
-      squares[i].firstChild.nodeValue = EMPTY;
-    }
-
+  // Inform the players about whose turn it is
+  function displayTurn() {
     whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
   }
 
-  function win(score) {
-    var i;
-    for (i = 0; i < wins.length; i += 1) {
-      if ((wins[i] & score) === wins[i]) {
-          return true;
-      }
-    }
-    return false;
-  }
-
-  function checkGameStatus(player, el) {
-    moves += 1;
-
-    score[player] += el.indicator;
-    //console.log('Score for player, ' + player + ': ' + score[player]);
-
-    if (win(score[turn])) {
-      alert(turn + ' wins!');
-    } else if (moves === 9) {
-      alert('Boooo!');
-    } else {
-      turn = (turn === 'X') ? 'O' : 'X';
-      whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
-    }
-  }
-
-  function set() { 
+  // Publish the position of clicked square and load the audios by playing once with muted sound so that the audios will work by clicking buttons using javascript afterward.
+  function set() {
     if(!audioLoaded){
       audioE.muted = true;
       audioS.muted = true;
@@ -357,31 +305,28 @@ function subscribe(channel) {
       audioLoaded = true;
     }
     
+    // Prevent the publishing if it is not the user's turn.
     if (turn !== mySign) return;
-
-    if (this.firstChild.nodeValue !== EMPTY) return;
     
     publishPosition(mySign, this.dataset.position);
 
-    // this is for Pub/Sub explained section. 
-    toBePublished(mySign, this.dataset.position)
-
   }
 
+  // Set the game boards with table element
   function play(channel) {
     var board = document.createElement('table'),
       indicator = 1,
       i, j,
       row, cell;
-    board.border = 1;
+      board.border = 1;
 
+    // Create cells for the table
     for (i = 1; i < 11; i += 1) {
       row = document.createElement('tr');
       board.appendChild(row);
       for (j = 1; j < 11; j += 1) {
         cell = document.createElement('td');
         cell.dataset.position = i + '-' + j;
-        cell.width = cell.height = '10%';
         cell.align = cell.valign = 'center';
         cell.indicator = indicator;
         if(channel == channelO){
@@ -389,180 +334,41 @@ function subscribe(channel) {
         }
         cell.appendChild(document.createTextNode(''));
         row.appendChild(cell);
-        squares.push(cell);
         indicator += indicator;
 
       }
     }
     
-    var ships;
-    
+    // Choose the placement and display the table
+    var shipElement;
     if(channel == channelX){
-    	ships = document.getElementById('myShips');
+    	shipElement = myShips;
     }else{
-    	ships = document.getElementById('enemyShips');
+    	shipElement = enemyShips;
     }
-	ships.appendChild(board);
+	  shipElement.append(board);
     
-    startNewGame();
-  }
-
-  /*
-   * Pub/Sub Explained section
-   */
-
-  function toBePublished(player, position) {
-    if(!document.getElementById('pubPlayer')) return;
-
-    document.getElementById('pubPlayer').textContent = '"' + player + '"';
-    document.getElementById('pubPosition').textContent = '"' + position + '"';
-  }
-  function subscribed(m) {
-    if(!document.getElementById('subPlayer')) return;
-
-    document.getElementById('subPlayer').textContent = '"' + m.player + '"';
-    document.getElementById('subPosition').textContent = '"' + m.position + '"';
-  }
-   
-  /*
-   * History API Explained section
-   */
-
-  if(document.getElementById('history')) {
-    var showResultButton = document.getElementById('showResultButton');
-    var select = document.getElementById('count');
-    var reverseCheck = document.getElementById('reverse');
-    var timeCheck = document.getElementById('time');
-    var timeSelect = document.getElementById('timeSpan');
-
-    timeCheck.addEventListener('change', function(e) {
-      if(timeCheck.checked) {
-        timeSelect.hidden = false;
-        reverseCheck.disabled = true;
-      } else {
-        timeSelect.hidden = true;
-        reverseCheck.disabled = false;
-      }
-    });
-
-    showResultButton.addEventListener('click', function(e) {
-      output.innerHTML = '';
-
-      var count = select.options[select.selectedIndex].value;
-      //console.log('Getting '+count+ ' messages from history...');
-
-      var isReversed = reverseCheck.checked;
-      //console.log('Reverse: '+isReversed);
-
-      var timespan = (timeCheck.checked) ? timeSelect.value : null;
-
-      getHistory(count, isReversed, timespan);
-    }, false);
-   }
-  
-
-  function getHistory(count, isReversed, timespan) {
-    if(timespan) {
-      
-      var start = (new Date().getTime() - (timespan*60*1000)) * 10000;
-      var end = new Date().getTime() * 10000;
-
-      //console.log(start, end)
-
-      pubnub.history({
-        channel: channel,
-        count: count,
-        start: start,
-        end: end,
-        callback: function(messages) {
-          messages[0].forEach(function(m){ 
-            //console.log(m);
-            output.innerHTML =  output.innerHTML + displayOutput(m);
-          });
-        }
-      });
-
-    } else {
-      pubnub.history({
-        channel: channel,
-        count: count,
-        reverse: isReversed,
-        callback: function(messages) {
-          messages[0].forEach(function(m){ 
-            //console.log(m);
-            output.innerHTML =  output.innerHTML + displayOutput(m);
-          });
-        }
-      });
-    }
-
-  }
-
-  /*
-   * Presence API Explained section
-   */
-
-  function showPresenceExamples(m) {
-    showPresenceConsole(m);
-
-    document.querySelector('.presence').classList.remove('two');
-    document.querySelector('.presence strong').textContent = m.occupancy;
-    document.querySelector('.presence span').textContent = 'player';
-    
-    if(m.occupancy > 1) {
-      document.querySelector('.presence span').textContent = 'players';
-      document.querySelector('.presence').classList.add('two');
-    }
-  }
-
-  function showPresenceConsole(m) {
-    var console = document.querySelector('#presenceConsole');
-    var child = document.createElement('div');
-    var text = document.createTextNode(JSON.stringify(m));
-    child.appendChild(text);
-    //console.appendChild(child);
-  }
-
-  if(document.getElementById('quitButton')) {
-    var quitButton = document.getElementById('quitButton');
-    quitButton.addEventListener('click', function(e) {
-      unsubscribe();
-    });
   }
   
+  // Unsubscribe the channels
   function unsubscribe() {
   	  pubnub.unsubscribe({
-        channel: [channelO, channelX,channelH],
+        channel: [channelO, channelX, channelH],
         callback: function(m) {
           //console.log(m);
-          showPresenceConsole(m);
         }
       });
   }
   
+  // Subscribe to the channels
   for(key in channelList){
  		subscribe(channelList[key]);
   }
+  subscribeH();
   
-  
-  var color;
+  // Display the choosen placement of the user's boats on the board (My Ships)
   for(key in ships){
   	boat = ships[key];
-  	for(el in boat){
-  		position = boat[el][0];
-  		if(key == "2a"){
-  			color="#e6ffb3";
-  		}else if(key == "3a"){
-  			color="#ffb3b3";
-  		}else if(key == "3b"){
-  			color="#99b3ff";
-  		}else if(key == "4a"){
-  			color="gray";
-  		}else if(key == "5a"){
-  			color="#ffff80";
-  		}
-  		//$('#myShips').find("[data-position='"+position+"']").css("background-color", color);
-  	}
     var p1=boat['e0'][0], p2=boat['e1'][0];
     var p1_l=p1.split("-");
     var p2_l=p2.split("-");
@@ -574,20 +380,15 @@ function subscribe(channel) {
     }
   }
   
+  // Close the popup window
   this.hidePopup = function(){
   	$('#popup').css("display", "none");
   }
-  
-  subscribeH();
 
+  // Quit the game by unsubscribing to the channels and redirecting to homepage
   this.quitGame = function(e){
-    unsubscribe();
-    // pubnub.channel_group_remove_group({
-    //   callback: function(){console.log("removed channels");},
-    //   error: function(){"removed error"},
-    //   channel_group: channelO
-    // });
     e.preventDefault();
+    unsubscribe();
     window.location.href = "index.html";
   }
 
