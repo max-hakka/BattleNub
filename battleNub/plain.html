@@ -17,7 +17,7 @@
 </head>
 
 <body>
-  <div style="overflow:hidden;position:absolute;">
+  <div id="plain_page">
   <section class="masthead">
     <h1>BattleNub</h1>
   </section>
@@ -26,7 +26,7 @@
   <section class="main">
     <section class="demo">
       <section class="game">        
-        <div class="col" style="width: 100vw;">
+        <div class="col" id="infobox">
         	<span>
 				Send the game ID to a friend you wish to play with.
       		</span>
@@ -39,7 +39,7 @@
 		
 		<div>Number of sunken ships: <span id="numberOfSunken"></span></div>
 		
-        <div class="col" style="width: 100vw;color:white;">
+        <div class="col" id="board_container">
         	<strong style="color:black;">Enemy Ships</strong>
             <div id="enemyShips" class="disabled"></div>
             </br>
@@ -49,8 +49,8 @@
         </div>
 		
         <button style="margin-top:20px;" onclick="quitGame(event)">QUIT GAME</button>
-        <button id="audioE_button" onclick="playAudio('E')" type="button" style="z-index: -100; position: fixed;">Play AudioE</button>
-        <button id="audioS_b" onclick="playAudio('S')" type="button" style="z-index: -100; position: fixed;">Play AudioS</button>
+        <button id="audioE_button" onclick="playAudio('E')" type="button">Play AudioE</button>
+        <button id="audioS_b" onclick="playAudio('S')" type="button">Play AudioS</button>
       </section>
 
     </section>

@@ -289,3 +289,66 @@ table td img{
   font-size:.8em;
   padding:10px;
 }
+
+div.shipButton{
+  display: inline-block;
+  background-repeat:no-repeat;
+  min-width:10vw;
+}
+#\35 a{
+ 
+  background-size: 10vw 50vw; 
+  min-height: 50vw; 
+  background-image:url('../images/5a-v.png');
+}
+#\34 a{
+  background-size: 10vw 40vw; 
+  min-height: 40vw; 
+  background-image:url('../images/4a-v.png');
+}
+#\33 a{
+  background-size: 10vw 30vw; 
+  min-height: 30vw; 
+  background-image:url('../images/3a-v.png');
+}
+#\33 b{
+  background-size: 10vw 30vw; 
+  min-height: 30vw; 
+  background-image:url('../images/3b-v.png');
+}
+#\32 a{
+  background-size: 10vw 20vw; 
+  min-height: 20vw; 
+  background-image:url('../images/2a-v.png');
+}
+#shipButtons{
+  overflow: hidden;
+  width: 100vw;
+}
+#startingShips{
+  width: 100vw;
+  margin-top:15px;
+}
+#instructions{
+  text-align: left;
+  margin-left:20%;
+  width:60vw;
+}
+#IdInput{
+  min-height:48px
+}
+#plain_page{
+  overflow:hidden;
+  position:absolute;
+}
+#infobox{
+  width: 100vw;
+}
+#board_container{
+  width: 100vw;
+  color:white;
+}
+#audioE_button, #audioS_b{
+  z-index: -100; 
+  position: fixed;
+}

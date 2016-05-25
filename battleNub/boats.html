@@ -28,12 +28,12 @@
       <section class="game">
       	Choose a ship
         </br>
-        <div class="col" style="overflow: hidden;width: 100vw;">
-          <div id="5a" onclick="setLength(5, 'a')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 50vw; min-height: 50vw; min-width:10vw;background-image:url('images/5a-v.png');"></div>
-          <div id="4a" onclick="setLength(4, 'a')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 40vw; min-height: 40vw; min-width:10vw;background-image:url('images/4a-v.png');"></div>
-          <div id="3a" onclick="setLength(3, 'a')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 30vw; min-height: 30vw; min-width:10vw;background-image:url('images/3a-v.png');"></div>
-          <div id="3b" onclick="setLength(3, 'b')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 30vw; min-height: 30vw; min-width:10vw;background-image:url('images/3b-v.png');"></div>
-          <div id="2a" onclick="setLength(2, 'a')" style="display: inline-block;background-repeat:no-repeat;background-size: 10vw 20vw; min-height: 20vw; min-width:10vw;background-image:url('images/2a-v.png');"></div>
+        <div class="col" id="shipButtons">
+          <div class="shipButton" id="5a" onclick="setLength(5, 'a')"></div>
+          <div class="shipButton" id="4a" onclick="setLength(4, 'a')"></div>
+          <div class="shipButton" id="3a" onclick="setLength(3, 'a')"></div>
+          <div class="shipButton" id="3b" onclick="setLength(3, 'b')"></div>
+          <div class="shipButton" id="2a" onclick="setLength(2, 'a')"></div>
         </div>
         </br>
         <form>
@@ -41,7 +41,7 @@
           	<input type="radio" name="orientation" onclick="setOrientation('v')">Horizontal</input>
         </form>
 
-        <div class="col" style="width: 100vw;margin-top:15px;">
+        <div class="col" id="startingShips">
           <div id="startShips" class="disabled"></div>
         </div>
 
