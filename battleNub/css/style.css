@@ -26,6 +26,7 @@ header {
   font-size: 36px auto;
   position: relative;
   margin: 1em auto;
+  z-index: -1;
 }
 
 
@@ -283,11 +284,12 @@ table td img{
 .backButton{
   margin-left:1vw;
   position:absolute;
+  margin-top: -3vw;
+  width:13vw;
+  text-align: left;
 }
-.backButton button{
-  width:20vw;
-  font-size:.8em;
-  padding:10px;
+.backButton img{
+  cursor: pointer;
 }
 
 div.shipButton{
@@ -351,4 +353,14 @@ div.shipButton{
 #audioE_button, #audioS_b{
   z-index: -100; 
   position: fixed;
+}
+.homeButton{
+  width: 24vw;
+  float: right;
+  padding-right:12vw;
+  margin-top: -4vw;
+  margin-right: -12vw;
+  position:relative;
+  text-align: right;
+  cursor: pointer;
 }

@@ -25,14 +25,22 @@
 </head>
 
 <body>
+  <div class="backButton">
+    <img src="http://static4.businessinsider.com/image/51bf0aa069bedda64a000017-196-118/back%20button.png" onclick="window.history.back();" width="100%" />
+  </div>
+
+  <a class="homeButton" href="index.html"><img src="http://www.parenfaire.com/mobile/lib/img/home/homebutton.png" width="100%"/></a>
+
   <section class="masthead">
     <h1>BattleNub</h1>
   </section>
 
+  </br>
   <section class="main">
   	<form name="joinForm" onsubmit="joinBattle(event)">
   		Input the ID of the game you wish to join!
   		</br>
+      </br>
   		ID: <input type="text" id="IdInput"></input>
   		<button type="submit">JOIN</button>
 	</form>

@@ -34,10 +34,10 @@
   gameId.textContent = gameid;
 
   // Specify the pubnub channels
-	var channelX = 'battleNubX--'+ gameid; // channel for player with sign "X"
-	var channelO = 'battleNubO--'+ gameid; // channel for player with sign "O"
-	var channelList = [channelX, channelO]; 
-	var channelH = 'battleNubH--'+ gameid; // channel for the information of the players hit and sunken boats
+  var channelX = 'battleNubX--'+ gameid; // channel for player with sign "X"
+  var channelO = 'battleNubO--'+ gameid; // channel for player with sign "O"
+  var channelList = [channelX, channelO]; 
+  var channelH = 'battleNubH--'+ gameid; // channel for the information of the players hit and sunken boats
 
   // Creates a new PubNub instance method
   var uuid = PUBNUB.uuid();
@@ -81,9 +81,7 @@
       }else if(m.action === 'leave'){
         var playerStatus = "Your opponent left the game!"
         var popUpElement = '<div style="width:60vw;height:60vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;"><h3 style="color:orange; font-size:30px; padding-top:12%;">'+playerStatus+'</h3><a href="boats.html"><button style="width:60%; height:20%; font-size:70%;">NEW GAME</button></a><a href="index.html"><button style="width:60%; height:20%; font-size:70%;">MAIN MENU</button></a></div>';
-        $('#popup').empty();
-        $('#popup').css("display", "block");
-        $('#popup').append(popUpElement);
+        displayPopup(popUpElement);
       }
 
       // Enable the game boards when the game has two players
@@ -96,20 +94,20 @@
     },
     callback: function(m) {
       // Call the function publishH() when the channel receives data from opponent 
-    	if(mySign !== m.player){
-    		publishH(m);
-    	}
+      if(mySign !== m.player){
+        publishH(m);
+      }
 
       // Select the DOM element of clicked square
       var element;
       if(mySign === "X" && channel === channelX){
-      	element = $('#enemyShips').find("[data-position='" +m.position + "']");
+        element = $('#enemyShips').find("[data-position='" +m.position + "']");
       }else if(mySign === "X" && channel === channelO){
-      	element = $('#myShips').find("[data-position='" +m.position + "']");
+        element = $('#myShips').find("[data-position='" +m.position + "']");
       }else if(mySign === "O" && channel === channelX){
-      	element = $('#myShips').find("[data-position='" +m.position + "']");
+        element = $('#myShips').find("[data-position='" +m.position + "']");
       }else if(mySign === "O" && channel === channelO){
-      	element = $('#enemyShips').find("[data-position='" +m.position + "']");
+        element = $('#enemyShips').find("[data-position='" +m.position + "']");
       }
 
       // Check if there are images in the clicked square and empty the content if so
@@ -126,13 +124,13 @@
 
   // Publish the position of clicked square to the players own channel
   function publishPosition(player, position) {
-  	var c;
-  	if (player === "O"){
-  	 c = channelO;
-  	}else{
-  	 c = channelX;
-  	}
-  	
+    var c;
+    if (player === "O"){
+     c = channelO;
+    }else{
+     c = channelX;
+    }
+    
     pubnub.publish({
       channel: c,
       message: {player: player, position: position},
@@ -145,39 +143,39 @@
   // Subscribe to channelH.
   // Check/inform if there was a hit on a boat, if there was a sunken boat and if the game is over.
   function subscribeH(){
-  	pubnub.subscribe({
+    pubnub.subscribe({
     channel: channelH,
     callback: function(m) {
       // Display explosion or water splash according to if there was a hit or not
-    	if(m.hit){
+      if(m.hit){
         $('#audioE_button').click(); // play upp the explosion audio
 
         // Increase the number of hits of the players
-    		if(m.player == mySign){
-    			myHit += 1;
-    		}else{
-    			enemyHit += 1; 
-    		}
-    		
+        if(m.player == mySign){
+          myHit += 1;
+        }else{
+          enemyHit += 1; 
+        }
+        
         // Display explosion animated image
-    		if(m.player === mySign){
+        if(m.player === mySign){
           $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
-    		}else if(m.player !== mySign){
+        }else if(m.player !== mySign){
           $('#myShips').find("[data-position='"+m.position+"']").append('<img src="http://www.slateman.net/rtype/gifs/rtypes-explosion2.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
-    		}
-    	}else{
+        }
+      }else{
         $('#audioS_b').click(); // play upp the water splash audio
 
         // Display water splash animated image
-    		if(m.player === mySign){
+        if(m.player === mySign){
           $('#enemyShips').find("[data-position='"+m.position+"']").append('<img src="https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
-    		}else if(m.player !== mySign){
+        }else if(m.player !== mySign){
           $('#myShips').find("[data-position='"+m.position+"']").append('<img src="https://daveriskit.files.wordpress.com/2015/02/splash-animated-gif.gif" style="width: 10vw;height: 10vw;position: absolute; z-index: 2;margin-left: -5vw;margin-top: -5vw;">');
-    		}
-    	}
+        }
+      }
 
       // Change the animated images with explostion/water splash PNG images after 2 seconds.
-    	setTimeout(function(){ 
+      setTimeout(function(){ 
         if(m.hit){
           if(m.player === mySign){
             $('#enemyShips').find("[data-position='"+m.position+"']").find("img:last-child").attr('src', 'http://cliparts.co/cliparts/gie/qBd/gieqBd8id.png');
@@ -191,50 +189,46 @@
             $('#myShips').find("[data-position='"+m.position+"']").find("img:last-child").attr('src', 'http://idahoptv.org/sciencetrek/topics/water/images/splash.png');
           }
         }
-    	}, 2000);
-    	
+      }, 2000);
+      
       // Check if there was a sunken boat and inform the players in a popup window if so.
-    	if(m.sunk){
+      if(m.sunk){
         // Increase the number of sunken boats
-    		if(m.player === mySign){
-    			numberOfSunken = numberOfSunken +1;
-    			numberOfSunkenEl.textContent = numberOfSunken;
-    		}
-    		
-    		var popUpElement = '<div style="width:60vw;height:20vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;padding:15px;">'+boatsNames[m.boatHit]+" was sunk!"+'</div>';
-    		$('#popup').empty();
-        	$('#popup').css("display", "block");
-    		$('#popup').append(popUpElement);
-    	}
-    	
+        if(m.player === mySign){
+          numberOfSunken = numberOfSunken +1;
+          numberOfSunkenEl.textContent = numberOfSunken;
+        }
+        
+        var popUpElement = '<div style="width:60vw;height:20vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;padding:15px;">'+boatsNames[m.boatHit]+" was sunk!"+'</div>';
+        displayPopup(popUpElement);
+      }
+      
       // Close the popup window after 2 seconds.
-    	setTimeout(function(){ 
-    		if(!gameover){
-        		this.hidePopup();
-        	}
-    	}, 2000);
-    	
+      setTimeout(function(){ 
+        if(!gameover){
+            this.hidePopup();
+          }
+      }, 2000);
+      
       // Select the gameover message for respektive players if a player has hit 17 squares
-    	var winStatus;
-    	var gameover = false;
-    	if(myHit == 17){
-    		winStatus = "Congratulations! You win!";
-    		gameover = true;
-    		unsubscribe();
-    	}else if(enemyHit == 17){
-    		winStatus = "You lose!";
-    		gameover = true;
-    		unsubscribe();
-    	}
-    	
+      var winStatus;
+      var gameover = false;
+      if(myHit == 17){
+        winStatus = "Congratulations! You win!";
+        gameover = true;
+        unsubscribe();
+      }else if(enemyHit == 17){
+        winStatus = "You lose!";
+        gameover = true;
+        unsubscribe();
+      }
+      
       // Popup the gameover message if the game is over
-    	if(gameover){
-    		var popUpElement = '<div style="width:60vw;height:60vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;"><button  style="float:right; width:25px; height:25px;padding:0;border-radius:0;" onclick="hidePopup()">X</button><h3 style="color:green; font-size:30px; padding-top:12%;">'+winStatus+'</h3><a href="boats.html"><button style="width:60%; height:20%; font-size:70%;">PLAY AGAIN</button></a><a href="index.html"><button style="width:60%; height:20%; font-size:70%;">MAIN MENU</button></a></div>';
-    		$('#popup').empty();
-        	$('#popup').css("display", "block");
-    		$('#popup').append(popUpElement);
-    	}
-    	
+      if(gameover){
+        var popUpElement = '<div style="width:60vw;height:60vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;"><button  style="float:right; width:25px; height:25px;padding:0;border-radius:0;" onclick="hidePopup()">X</button><h3 style="color:green; font-size:30px; padding-top:12%;">'+winStatus+'</h3><a href="boats.html"><button style="width:60%; height:20%; font-size:70%;">PLAY AGAIN</button></a><a href="index.html"><button style="width:60%; height:20%; font-size:70%;">MAIN MENU</button></a></div>';
+        displayPopup(popUpElement);
+      }
+      
     }
   });
   }
@@ -247,24 +241,24 @@
 
     // Check if there was a hit och sunken boat
     Loop1:
-  	for(key in ships){
-  		var boat = ships[key];
-  		for(e in boat){
-  			if(boat[e][0] === m.position){
-  				boatHit = key;
-  				boat[e][1] = true;
-  				hit = true;
-  				for(k in ships[key]){
-  					sunk =true;
-  					if(!boat[k][1]){
-  						sunk =false;
-  						break Loop1;
-  					}
-  				}
-  				
-  			}
-  		}
-  	}
+    for(key in ships){
+      var boat = ships[key];
+      for(e in boat){
+        if(boat[e][0] === m.position){
+          boatHit = key;
+          boat[e][1] = true;
+          hit = true;
+          for(k in ships[key]){
+            sunk =true;
+            if(!boat[k][1]){
+              sunk =false;
+              break Loop1;
+            }
+          }
+          
+        }
+      }
+    }
 
     // Publish the hit and sunken boat into the channelH
     pubnub.publish({
@@ -330,7 +324,7 @@
         cell.align = cell.valign = 'center';
         cell.indicator = indicator;
         if(channel == channelO){
-        	cell.onclick = set;
+          cell.onclick = set;
         }
         cell.appendChild(document.createTextNode(''));
         row.appendChild(cell);
@@ -342,17 +336,17 @@
     // Choose the placement and display the table
     var shipElement;
     if(channel == channelX){
-    	shipElement = myShips;
+      shipElement = myShips;
     }else{
-    	shipElement = enemyShips;
+      shipElement = enemyShips;
     }
-	  shipElement.append(board);
+    shipElement.append(board);
     
   }
   
   // Unsubscribe the channels
   function unsubscribe() {
-  	  pubnub.unsubscribe({
+      pubnub.unsubscribe({
         channel: [channelO, channelX, channelH],
         callback: function(m) {
           //console.log(m);
@@ -362,13 +356,13 @@
   
   // Subscribe to the channels
   for(key in channelList){
- 		subscribe(channelList[key]);
+    subscribe(channelList[key]);
   }
   subscribeH();
   
   // Display the choosen placement of the user's boats on the board (My Ships)
   for(key in ships){
-  	boat = ships[key];
+    boat = ships[key];
     var p1=boat['e0'][0], p2=boat['e1'][0];
     var p1_l=p1.split("-");
     var p2_l=p2.split("-");
@@ -379,10 +373,17 @@
       $('#myShips').find("[data-position='"+p1+"']").append("<img src='images/"+key+"-v.png' style='height:"+key.substr(0,1)+"0vw; z-index: 1;'></img>");
     }
   }
+
+  // Display popup window
+  function displayPopup(message) {
+    $('#popup').empty();
+    $('#popup').css("display", "block");
+    $('#popup').append(message);
+  }
   
   // Close the popup window
   this.hidePopup = function(){
-  	$('#popup').css("display", "none");
+    $('#popup').css("display", "none");
   }
 
   // Quit the game by unsubscribing to the channels and redirecting to homepage
@@ -390,6 +391,11 @@
     e.preventDefault();
     unsubscribe();
     window.location.href = "index.html";
+  }
+
+  if(!ships){
+    var popUpElement = '<div style="width:60vw;height:60vh;background-color:rgba(255,255,255,1);color:black;margin-left:auto;margin-right:auto;margin-top:15vh;"><h3 style="color:green; font-size:30px; padding-top:12%;">'+"You haven't placed your boats yet! Please place your boats first!"+'</h3><a href="boats.html"><button style="width:60%; height:20%; font-size:70%;">PLACE BOATS</button></a></div>';
+    displayPopup(popUpElement);
   }
 
 })();
