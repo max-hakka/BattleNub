@@ -364,3 +364,15 @@ div.shipButton{
   text-align: right;
   cursor: pointer;
 }
+#soundButton{
+  background-image: url("https://t1.ftcdn.net/jpg/00/62/25/34/500_F_62253460_VTz709F18AA7VProRnWdrG2FRYN8ZGKv.jpg");
+  background-size: auto 100px;
+  float:right;
+  overflow:hidden;
+  width:40px;
+  height:40px;
+  margin:5px;
+  cursor:pointer;
+  background-position: -7px -5px;
+  border-radius: 20px;
+}
