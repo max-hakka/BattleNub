@@ -52,77 +52,155 @@
   this.setOrientation = function(ori){
   		shipOrientation = ori;
   }
+
+  // Check if the placement of a boat is valid and return null or the positions of squares
+  function getPositions(i,j){
+      var list = {};
+      var dataP;
+      // Check if the placement is valid
+      for(k=0; k<shipLength; k++){
+
+        // Check if the length of the selected boat exceeds edge of the board
+        if(shipOrientation == 'v'){
+          if(j+k >10){
+            return null;
+          }
+            dataP = i+'-'+(j+k);
+          list['e'+k]=[dataP, false];
+        }else{
+          if(i+k >10){
+            return null;
+          }
+          dataP = (i+k)+'-'+j;
+          list['e'+k]=[dataP, false];
+        }
+
+        // Check if the position of any square of the selected boat is occupied by other boats 
+        if(boats !== {}){
+          for(key in boats){
+            if(shipLength+shipType !== key){
+              boat = boats[key];
+              for(e in boat){
+                if(dataP === boat[e][0]){
+                  return null;
+                }
+              }
+            }
+          }
+        }
+      }
+      return list;
+  }
+
+  // Display the selected boat on the board
+  function displayBoat(position){
+      // Display the selected boat according to it's choosen orientation
+      if(shipOrientation == 'v'){
+        $("table").find("[data-position='"+position+"']").append("<img src='images/"+shipLength+shipType+".png' style='width:"+shipLength+"0vw; z-index: 1;'></img>");
+      }else {
+        $("table").find("[data-position='"+position+"']").append("<img src='images/"+shipLength+shipType+"-v.png' style='height:"+shipLength+"0vw; z-index: 1;'></img>");
+      }
+
+      // Enable the "START BATTLE" and "JOIN BATTLE" buttons if user has positioned all the boats
+      var c = 0;
+      for(key in boats){
+       c +=1;
+      }
+      if(c === 5){
+        document.getElementById("bButton").disabled = false;
+        document.getElementById("jButton").disabled = false;
+      }
+  }
   
   // Place the selected boat on the board
   this.placeBoat = function (i,j){
-  		var list = {};
-  		var dataP;
-  		var positions = [];
-  		
-      // Check if the placement is valid
-  		for(k=0; k<shipLength; k++){
-
-        // Check if the length of the selected boat exceeds edge of the board
-  			if(shipOrientation == 'v'){
-  				if(j+k >10){
-  					return;
-  				}
-  			    dataP = i+'-'+(j+k);
-  				list['e'+k]=[dataP, false];
-  			}else{
-  				if(i+k >10){
-  					return;
-  				}
-  				dataP = (i+k)+'-'+j;
-  				list['e'+k]=[dataP, false];
-  			}
-  			positions.push(dataP);
-
-        // Check if the position of any square of the selected boat is occupied by other boats 
-  			if(boats !== {}){
-  				for(key in boats){
-  					if(shipLength+shipType !== key){
-  						boat = boats[key];
-  						for(e in boat){
-  							if(dataP === boat[e][0]){
-  								return;
-  							}
-  						}
-  					}
-  				}
-  			}
-  		}
-  		
+  	list = getPositions(i,j);
+    if(list !== null){
       // Check if the selected boat already exists on the board and remove it (old one) if so.
-  		b = boats[shipLength+shipType];
-  		if(b){
+      b = boats[shipLength+shipType];
+      if(b){
         $("table").find("[data-position='"+b['e0'][0]+"']").empty();
-  		}
-  		
-      // Display the selected boat on the board
-      if(shipOrientation == 'v'){
-        $("table").find("[data-position='"+positions[0]+"']").append("<img src='images/"+shipLength+shipType+".png' style='width:"+shipLength+"0vw; z-index: 1;'></img>");
-      }else {
-        $("table").find("[data-position='"+positions[0]+"']").append("<img src='images/"+shipLength+shipType+"-v.png' style='height:"+shipLength+"0vw; z-index: 1;'></img>");
       }
 
-  		boats[shipLength+shipType] = list; // Store the newly placed boat in the variable (boats)
-  		
-      // Enable the "START BATTLE" and "JOIN BATTLE" buttons if user has positioned all the boats
-  		var c = 0;
-  		for(key in boats){
-  		 c +=1;
-  		}
-  		if(c === 5){
-  			document.getElementById("bButton").disabled = false;
-  			document.getElementById("jButton").disabled = false;
-  		}
+      boats[shipLength+shipType] = list; // Store the newly placed boat in the variable (boats)
 
+      displayBoat(i+"-"+j);
+    }
   }
   
   // Store the placement of all boats in the local storage
   this.storeData = function(){
   	localStorage.setItem("boats", JSON.stringify(boats));
+  }
+
+  // Return the valid random placement of a boat
+  function getRandomPositions(bPositions) {
+    if(!bPositions){
+      var i = Math.floor((Math.random()*10)+1); // get a random value for row
+      var j = Math.floor((Math.random()*10)+1); // get a random value for column
+      bPositions = getPositions(i,j);
+
+      // Find a valid placement recursively
+      if(bPositions){
+        return bPositions;
+      }else{
+        return getRandomPositions(bPositions);
+      }
+    }
+  }
+
+  // Generate the random placement of all boats and display them on board
+  function placeRandomBoats() {
+    var boatsID = ["5a", "4a", "3a", "3b", "2a"];
+    var boatsOrientation = ["v", "h"];
+
+    // Get the positions of all boats and display them
+    for(key in boatsID){
+      var bId = boatsID[key];
+      shipLength = parseInt(bId.substr(0,1));
+      shipType = bId.substr(1);
+      shipOrientation = boatsOrientation[Math.floor(Math.random()*boatsOrientation.length)]; // randomly choose the orientation of boat from "boatsOrientation"
+      var randomPos = getRandomPositions(null);
+      boats[bId] = randomPos;
+      var position = randomPos["e0"][0];
+      displayBoat(position);
+    }
+  }
+
+  // Detect shaking of device
+  if (window.DeviceMotionEvent) {
+    var sensitivity = 25;
+    var x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
+
+    // Listen to the motion of device
+    window.addEventListener('devicemotion', deviceMotionHandler, false);
+
+    // Calculate the movement of device every 150 seconds
+    // using the values of accelerationIncludingGravity
+    setInterval(function () {
+        var movement = Math.abs(x1-x2+y1-y2+z1-z2);
+
+        // Check if the shaking is detected
+        if (movement > sensitivity) {
+            x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
+            boats = {};
+            $("table").find("img").remove();
+            placeRandomBoats();
+        }
+        // Update new position
+        x2 = x1;
+        y2 = y1;
+        z2 = z1;
+    }, 150);
+  } else {
+    $("#shaking").text("Your device doesn't support shaking.");
+  }
+
+  // Get the movement of device
+  function deviceMotionHandler(eventData){
+    x1 = eventData.accelerationIncludingGravity.x;
+    y1 = eventData.accelerationIncludingGravity.y;
+    z1 = eventData.accelerationIncludingGravity.z;
   }
   
   createBoard();
