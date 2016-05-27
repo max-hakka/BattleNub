@@ -49,14 +49,24 @@
 
   // Play a choosen audio. The value "E" of parameter (t) define explosion audio and "S" water splash.
   this.playAudio = function (t){
-      audioE.muted = false;
-      audioS.muted = false;
       if(t == "E"){
         audioE.play();
       }else if(t == "S"){
         audioS.play();
       }
   };
+
+  this.soundOnOff = function() {
+    if(audioE.muted){
+      audioE.muted = false;
+      audioS.muted = false;
+      $("#soundButton").css("background-position", "-7px -5px");
+    }else{
+      audioE.muted = true;
+      audioS.muted = true;
+      $("#soundButton").css("background-position", "-53px -5px");
+    }
+  }
 
   // Subscribe to a channel,
   // Check/display the occupancy of the channel,
@@ -288,6 +298,10 @@
   // Publish the position of clicked square and load the audios by playing once with muted sound so that the audios will work by clicking buttons using javascript afterward.
   function set() {
     if(!audioLoaded){
+      var muted = false;
+      if(audioE.muted){
+        muted = true;
+      }
       audioE.muted = true;
       audioS.muted = true;
 
@@ -297,6 +311,10 @@
       audioS.play();
       audioS.pause();
       audioLoaded = true;
+      if(!muted){
+        audioE.muted = false;
+        audioS.muted = false;
+      }
     }
     
     // Prevent the publishing if it is not the user's turn.

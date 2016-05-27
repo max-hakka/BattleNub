@@ -169,7 +169,7 @@
 
   // Detect shaking of device
   if (window.DeviceMotionEvent) {
-    var sensitivity = 25;
+    var sensitivity = 30;
     var x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
 
     // Listen to the motion of device
